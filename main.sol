@@ -118,3 +118,18 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
             digits++;
             temp /= 10;
         }
+        bytes memory buffer = new bytes(digits);
+        while (value != 0) {
+            digits -= 1;
+            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
+            value /= 10;
+        }
+        return string(buffer);
+    }
+
+    function totalMinted() external view returns (uint256) {
+        return nextTokenId - 1;
+    }
+
+    function remainingSupply() external view returns (uint256) {
+        return nextTokenId > MOG_MAX_SUPPLY ? 0 : MOG_MAX_SUPPLY - nextTokenId + 1;
