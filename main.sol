@@ -73,3 +73,18 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
         if (msg.value < mintPriceWei) revert MOG_InsufficientValue();
 
         uint256 tokenId = nextTokenId++;
+        _safeMint(msg.sender, tokenId);
+
+        if (msg.value > 0 && treasury != address(0)) {
+            (bool ok,) = treasury.call{value: msg.value}("");
+            if (!ok) revert MOG_TransferFailed();
+        }
+        emit Minted(msg.sender, tokenId, msg.value);
+    }
+
+    function mintBatch(uint256 count) external payable nonReentrant {
+        if (!publicMintEnabled) revert MOG_MintDisabled();
+        if (count == 0) revert MOG_ZeroAmount();
+        if (nextTokenId + count - 1 > MOG_MAX_SUPPLY) revert MOG_MaxSupplyReached();
+        uint256 totalCost = mintPriceWei * count;
+        if (msg.value < totalCost) revert MOG_InsufficientValue();
