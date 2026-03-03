@@ -103,3 +103,18 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
             (bool refund,) = msg.sender.call{value: msg.value - totalCost}("");
             if (!refund) revert MOG_TransferFailed();
         }
+    }
+
+    function tokenURI(uint256 tokenId) public view override returns (string memory) {
+        if (!_exists(tokenId)) revert MOG_InvalidTokenId();
+        return string(abi.encodePacked(baseTokenURI, _toString(tokenId)));
+    }
+
+    function _toString(uint256 value) internal pure returns (string memory) {
+        if (value == 0) return "0";
+        uint256 temp = value;
+        uint256 digits;
+        while (temp != 0) {
+            digits++;
+            temp /= 10;
+        }
