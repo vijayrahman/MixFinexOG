@@ -133,3 +133,13 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
 
     function remainingSupply() external view returns (uint256) {
         return nextTokenId > MOG_MAX_SUPPLY ? 0 : MOG_MAX_SUPPLY - nextTokenId + 1;
+    }
+
+    function withdraw() external onlyOwner nonReentrant {
+        if (treasury == address(0)) revert MOG_ZeroAddress();
+        uint256 balance = address(this).balance;
+        if (balance == 0) revert MOG_ZeroAmount();
+        (bool ok,) = treasury.call{value: balance}("");
+        if (!ok) revert MOG_TransferFailed();
+    }
+}
