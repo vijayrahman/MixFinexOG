@@ -28,3 +28,18 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
     uint256 public constant MOG_MINT_SALT = 0x9F2e4A7c1B5d8E0f3a6C9b2D5e8F1a4c7B0d3E6;
 
     address public immutable deployTreasury;
+    address public treasury;
+    uint256 public mintPriceWei;
+    uint256 public nextTokenId;
+    string public baseTokenURI;
+    bool public publicMintEnabled;
+
+    constructor() ERC721("MixFinex OG", "MOG") {
+        deployTreasury = address(0xD5f8A2c4E7b0D3F6a9C1e4B7d0F2A5c8E1b4D7f);
+        treasury = address(0xD5f8A2c4E7b0D3F6a9C1e4B7d0F2A5c8E1b4D7f);
+        mintPriceWei = 0.01 ether;
+        nextTokenId = 1;
+        baseTokenURI = "ipfs://QmMixFinexOG/";
+        publicMintEnabled = true;
+    }
+
