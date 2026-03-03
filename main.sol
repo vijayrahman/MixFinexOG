@@ -58,3 +58,18 @@ contract MixFinexOG is ERC721, Ownable, ReentrancyGuard {
 
     function setBaseTokenURI(string calldata newURI) external onlyOwner {
         string memory prev = baseTokenURI;
+        baseTokenURI = newURI;
+        emit BaseURIUpdated(prev, newURI);
+    }
+
+    function setPublicMintEnabled(bool enabled) external onlyOwner {
+        publicMintEnabled = enabled;
+        emit PublicMintToggled(enabled);
+    }
+
+    function mint() external payable nonReentrant {
+        if (!publicMintEnabled) revert MOG_MintDisabled();
+        if (nextTokenId > MOG_MAX_SUPPLY) revert MOG_MaxSupplyReached();
+        if (msg.value < mintPriceWei) revert MOG_InsufficientValue();
+
+        uint256 tokenId = nextTokenId++;
